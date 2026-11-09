@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ja"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#1a0612">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<title>ガチャトレ</title>
+<style>
+:root{--bg:#1a0612;--bg2:#2c0b1f;--pk:#ff4d94;--pk2:#c2185b;--gd:#f5c77e;--tx:#ffeaf3;--mt:#c9a0b4;--paper:#f7f0e4;--ink:#3a2a2a}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 50% -10%,#5a1240 0,var(--bg) 60%) fixed;color:var(--tx);font-family:"Hiragino Mincho ProN","Yu Mincho",serif;padding:calc(env(safe-area-inset-top,0px) + 10px) 12px 90px}
+h1{font-size:22px;margin:4px 0 2px;letter-spacing:.15em;color:var(--gd);text-shadow:0 0 14px var(--pk)}
+.sub{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-family:sans-serif}
+.pts{background:linear-gradient(135deg,var(--pk),var(--pk2));padding:5px 14px;border-radius:20px;font-weight:700;box-shadow:0 0 12px #ff4d9488}
+.card{background:linear-gradient(160deg,#3b0f2a,#25091a);border:1px solid #ff4d9455;border-radius:16px;padding:14px;margin-bottom:12px;box-shadow:0 4px 20px #0008;font-family:sans-serif}
+h3{margin:0 0 10px;color:var(--gd);font-family:"Hiragino Mincho ProN",serif;letter-spacing:.08em}
+input,select,textarea{width:100%;background:#12040c;color:var(--tx);border:1px solid #ff4d9466;border-radius:10px;padding:11px;font-size:16px;margin-bottom:8px}
+input:disabled{opacity:.4}
+.row{display:flex;gap:8px}
+button{background:linear-gradient(135deg,var(--pk),var(--pk2));color:#fff;border:0;border-radius:12px;padding:12px 16px;font-size:16px;font-weight:700;width:100%;box-shadow:0 0 14px #ff4d9477}
+button.sm{width:auto;padding:6px 12px;font-size:13px;box-shadow:none}
+button.g{background:#12040c;border:1px solid #ff4d9477;box-shadow:none;color:var(--tx)}
+button:active{transform:scale(.97)}
+.li{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px dashed #ff4d9444;gap:8px}
+.mt{color:var(--mt);font-size:13px}
+nav{position:fixed;left:0;right:0;bottom:0;display:flex;background:#12040cf2;border-top:1px solid #ff4d9477;padding-bottom:env(safe-area-inset-bottom,0px);font-family:sans-serif}
+nav b{flex:1;text-align:center;padding:12px 0;font-size:12px;color:var(--mt);font-weight:400}
+nav b.on{color:var(--pk);font-weight:700;text-shadow:0 0 8px var(--pk)}
+nav b span{display:block;font-size:19px}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center}
+.cal div{padding:9px 0;border-radius:8px;font-size:14px;background:#12040c88}
+.cal .d{background:#12040c}.cal .w{background:linear-gradient(135deg,var(--pk),var(--pk2));font-weight:700}.cal .sel{outline:2px solid var(--gd)}
+.cal .h{background:none;color:var(--mt);font-size:12px}
+.res{position:relative;height:420px;border-radius:18px;overflow:hidden;background:#000 center/cover;display:flex;align-items:flex-end;box-shadow:0 0 30px var(--pk);animation:pop .5s}
+.res p{margin:0;padding:60px 18px 20px;width:100%;background:linear-gradient(transparent,#000d);font-size:19px;line-height:1.6;text-shadow:0 2px 6px #000}
+@keyframes pop{from{transform:scale(.7) rotate(-4deg);opacity:0}}
+.board{background:#8a5a34;border-radius:14px;padding:14px 10px;display:grid;grid-template-columns:1fr 1fr;gap:22px 10px;box-shadow:inset 0 0 20px #0008}
+.sheet{position:relative;background:var(--paper);color:var(--ink);padding:22px 8px 8px;border-radius:3px;box-shadow:2px 4px 8px #0007;transform:rotate(var(--r))}
+.sheet:before{content:"";position:absolute;top:-10px;left:50%;margin-left:-28px;width:56px;height:20px;background:linear-gradient(#e8e8e8,#9a9a9a);border-radius:5px 5px 2px 2px;box-shadow:0 2px 3px #0006}
+.sheet:after{content:"";position:absolute;top:-3px;left:50%;margin-left:-8px;width:16px;height:8px;background:#555;border-radius:50%}
+.ph{aspect-ratio:3/4;background:#ccc center/cover;border-radius:2px}
+.sheet p{margin:6px 0 2px;font-size:11px;line-height:1.5;min-height:50px}
+.fav{position:absolute;right:4px;top:26px;background:#0007;border-radius:50%;width:32px;height:32px;padding:0;font-size:18px;box-shadow:none}
+.thumb{width:44px;height:44px;border-radius:8px;background:center/cover;flex:none;position:relative}
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:var(--gd);color:#3a0a24;padding:10px 20px;border-radius:20px;font-weight:700;font-family:sans-serif;z-index:9;box-shadow:0 4px 16px #000a}
+.ibtn{margin-bottom:12px;background:linear-gradient(135deg,var(--gd),#e0903a);color:#3a0a24;box-shadow:0 0 18px #f5c77e88}
+.chips{display:flex;gap:6px;overflow-x:auto;margin-bottom:10px;font-family:sans-serif}
+.chips button{width:auto;white-space:nowrap;padding:7px 14px;font-size:14px}
+</style></head><body>
+<div class="sub"><h1>ガチャトレ</h1><span class="pts" id="pts"></span></div>
+<div id="ib"></div>
+<main id="app"></main>
+<nav id="nav"></nav>
+<script>
+const $=s=>document.querySelector(s),esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid=()=>Math.random().toString(36).slice(2,9),pad=n=>String(n).padStart(2,'0');
+const ymd=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const DEF={ex:['腕立て','腹筋','ショルダープレス','フレンチプレス','サイドレイズ','スクワット','スカルクラッシャー'].map((n,i)=>({id:'e'+i,name:n,bw:[0,1,5].includes(i)})),logs:{},pts:0,draft:[],gachas:[{id:'g1',name:'お姉さんガチャ',cost:10,words:[],photos:[],used:[]}],col:[]};
+let S;try{S=JSON.parse(localStorage.getItem('gt1'))||DEF}catch(e){S=DEF}
+const save=()=>{try{localStorage.setItem('gt1',JSON.stringify(S))}catch(e){toast('保存に失敗しました')}};
+const P={};
+const dbp=new Promise(r=>{const q=indexedDB.open('gtp',1);q.onupgradeneeded=()=>q.result.createObjectStore('p');q.onsuccess=()=>r(q.result)});
+const pPut=async(k,v)=>{const d=await dbp;d.transaction('p','readwrite').objectStore('p').put(v,k)};
+const pDel=async k=>{const d=await dbp;d.transaction('p','readwrite').objectStore('p').delete(k)};
+const pLoad=async()=>{const d=await dbp;return new Promise(r=>{const o=d.transaction('p').objectStore('p').openCursor();o.onsuccess=e=>{const c=e.target.result;if(c){P[c.key]=c.value;c.continue()}else r()}})};
+const resize=f=>new Promise(res=>{const u=URL.createObjectURL(f),i=new Image();i.onload=()=>{const m=900,k=Math.min(1,m/Math.max(i.width,i.height)),c=document.createElement('canvas');c.width=i.width*k;c.height=i.height*k;c.getContext('2d').drawImage(i,0,0,c.width,c.height);URL.revokeObjectURL(u);res(c.toDataURL('image/jpeg',.82))};i.src=u});
+function toast(t){const e=document.createElement('div');e.className='toast';e.textContent=t;document.body.appendChild(e);setTimeout(()=>e.remove(),1800)}
+let tab='rec',selEx=null,cm=new Date(),selDay=ymd(new Date()),gid='g1',last=null,cf='all',cfav=false,inst=null;
+const TABS=[['rec','🏋️','記録'],['cal','📅','カレンダー'],['gac','🎰','ガチャ'],['col','📋','コレクション'],['set','⚙️','設定']];
+const G=id=>S.gachas.find(g=>g.id===id)||S.gachas[0];
+const remain=g=>g.words.length*g.photos.length-g.used.length;
+function go(t){tab=t;render()}
+function render(){
+ $('#pts').textContent='💎 '+S.pts+' pt';ib();
+ $('#nav').innerHTML=TABS.map(t=>`<b class="${t[0]==tab?'on':''}" onclick="go('${t[0]}')"><span>${t[1]}</span>${t[2]}</b>`).join('');
+ $('#app').innerHTML=({rec,cal,gac,col,set})[tab]();
+ if(tab=='rec')tw();
+}
+function rec(){
+ if(!selEx||!S.ex.find(e=>e.id==selEx))selEx=S.ex[0]&&S.ex[0].id;
+ const nm=id=>(S.ex.find(e=>e.id==id)||{name:'(削除済み)'}).name;
+ const pt=10+S.draft.length*2;
+ return `<div class="card"><h3>${ymd(new Date())} の記録</h3>
+ <select id="sx" onchange="selEx=this.value;tw()">${S.ex.map(e=>`<option value="${e.id}" ${e.id==selEx?'selected':''}>${esc(e.name)}${e.bw?'(自重)':''}</option>`).join('')}</select>
+ <div class="row"><input id="rp" type="number" inputmode="numeric" placeholder="回数"><input id="rw" type="number" inputmode="decimal" step="0.5" placeholder="重量(kg)"></div>
+ <button onclick="addSet()">セットを追加</button></div>
+ <div class="card"><h3>今日のセット</h3>${S.draft.length?S.draft.map((d,i)=>`<div class="li"><span>${esc(nm(d.e))}　${d.r}回 × ${d.w?d.w+'kg':'自重'}</span><button class="sm g" onclick="S.draft.splice(${i},1);save();render()">削除</button></div>`).join(''):'<p class="mt">まだありません。上から追加してください。</p>'}
+ <br><button onclick="reg()" ${S.draft.length?'':'disabled style="opacity:.4"'}>登録して ${pt}pt もらう</button><p class="mt">登録ごとに10pt + 1セットにつき2pt</p></div>`}
+function tw(){const e=S.ex.find(x=>x.id==selEx),w=$('#rw');if(!w)return;w.disabled=!!(e&&e.bw);w.placeholder=e&&e.bw?'自重':'重量(kg)'}
+function addSet(){const r=+$('#rp').value,e=S.ex.find(x=>x.id==selEx);if(!e)return toast('種目を追加してください');if(!(r>0))return toast('回数を入れてください');
+ S.draft.push({e:e.id,r,w:e.bw?0:(+$('#rw').value||0)});save();render()}
+function reg(){if(!S.draft.length)return;const g=10+S.draft.length*2,d=ymd(new Date());(S.logs[d]=S.logs[d]||[]).push(...S.draft);S.pts+=g;S.draft=[];save();render();toast('+'+g+'pt ゲット!')}
+function cal(){
+ const y=cm.getFullYear(),m=cm.getMonth(),f=new Date(y,m,1).getDay(),n=new Date(y,m+1,0).getDate();
+ let h=['日','月','火','水','木','金','土'].map(x=>`<div class="h">${x}</div>`).join('')+'<div></div>'.repeat(f);
+ for(let i=1;i<=n;i++){const k=y+'-'+pad(m+1)+'-'+pad(i),w=S.logs[k];h+=`<div class="${w?'w':'d'} ${k==selDay?'sel':''}" onclick="selDay='${k}';render()">${i}</div>`}
+ const L=S.logs[selDay]||[],nm=id=>(S.ex.find(e=>e.id==id)||{name:'(削除済み)'}).name,by={};
+ L.forEach(s=>(by[s.e]=by[s.e]||[]).push(s));
+ return `<div class="card"><div class="li" style="border:0"><button class="sm g" onclick="cm=new Date(${y},${m-1},1);render()">◀</button><h3 style="margin:0">${y}年${m+1}月</h3><button class="sm g" onclick="cm=new Date(${y},${m+1},1);render()">▶</button></div><div class="cal">${h}</div></div>
+ <div class="card"><h3>${selDay}</h3>${L.length?Object.keys(by).map(e=>`<div class="li"><b>${esc(nm(e))}</b><span class="mt">${by[e].map(s=>s.r+'×'+(s.w?s.w+'kg':'自重')).join(' / ')}</span></div>`).join(''):'<p class="mt">この日の記録はありません。</p>'}</div>`}
+function gac(){
+ const g=G(gid),r=remain(g);
+ const rs=last?`<div class="res" style="background-image:url(${P[last.p]||''})"><p>${esc(last.t)}</p></div><br>`:'';
+ return `<div class="chips">${S.gachas.map(x=>`<button class="${x.id==g.id?'':'g'}" onclick="gid='${x.id}';last=null;render()">${esc(x.name)}</button>`).join('')}</div>
+ ${rs}<div class="card"><h3>${esc(g.name)}</h3><p class="mt">言葉 ${g.words.length} × 写真 ${g.photos.length} / 未出現 ${Math.max(0,r)} 通り</p>
+ <button onclick="draw()">1回引く（${g.cost}pt）</button>
+ ${g.words.length&&g.photos.length?'':'<p class="mt">設定タブで言葉と写真を追加してください。</p>'}</div>`}
+function draw(){
+ const g=G(gid);if(!g.words.length||!g.photos.length)return toast('言葉と写真を追加してください');
+ if(S.pts<g.cost)return toast('ポイントが足りません');
+ const used=new Set(g.used),c=[];g.words.forEach(w=>g.photos.forEach(p=>{if(!used.has(w.id+'|'+p))c.push([w,p])}));
+ if(!c.length)return toast('全部出ました！コンプリート');
+ const [w,p]=c[Math.floor(Math.random()*c.length)];
+ S.pts-=g.cost;g.used.push(w.id+'|'+p);S.col.push({id:uid(),g:g.id,w:w.id,t:w.t,p,fav:false,d:ymd(new Date())});
+ last={t:w.t,p};save();render();window.scrollTo(0,0)}
+function col(){
+ let L=S.col.filter(c=>(cf=='all'||c.g==cf)&&(!cfav||c.fav));
+ return `<div class="chips"><button class="${cfav?'':'g'}" onclick="cfav=!cfav;render()">♥ お気に入り</button><button class="${cf=='all'?'':'g'}" onclick="cf='all';render()">全部</button>${S.gachas.map(x=>`<button class="${cf==x.id?'':'g'}" onclick="cf='${x.id}';render()">${esc(x.name)}</button>`).join('')}</div>
+ ${L.length?`<div class="board">${L.slice().reverse().map((c,i)=>`<div class="sheet" style="--r:${(i%5-2)*0.9}deg"><div class="ph" style="background-image:url(${P[c.p]||''})"></div><button class="fav" onclick="fv('${c.id}')">${c.fav?'❤️':'🤍'}</button><p>${esc(c.t)}</p></div>`).join('')}</div>`:'<div class="card"><p class="mt">まだ何もありません。ガチャを引くとここに貼られます。</p></div>'}`}
+function fv(id){const c=S.col.find(x=>x.id==id);c.fav=!c.fav;save();render()}
+function set(){
+ return `<div class="card"><h3>アプリをインストール</h3><button onclick="install()">ホーム画面に追加</button></div>
+ <div class="card"><h3>筋トレの種目</h3>${S.ex.map(e=>`<div class="li"><span>${esc(e.name)} <span class="mt">${e.bw?'自重':'重量あり'}</span></span><button class="sm g" onclick="delEx('${e.id}')">削除</button></div>`).join('')}
+ <br><input id="en" placeholder="新しい種目名"><label class="mt"><input id="eb" type="checkbox" style="width:auto"> 自重の種目</label><br><br><button onclick="addEx()">種目を追加</button></div>
+ ${S.gachas.map(g=>`<div class="card"><h3>${esc(g.name)}</h3>
+ <div class="row"><input value="${esc(g.name)}" onchange="G('${g.id}').name=this.value;save()"><input type="number" value="${g.cost}" style="max-width:90px" onchange="G('${g.id}').cost=Math.max(0,+this.value||0);save()"></div>
+ <p class="mt">↑名前 / 1回のポイント</p>
+ <textarea id="wt${g.id}" rows="3" placeholder="言葉を追加（1行に1つ）"></textarea><button class="g" onclick="addW('${g.id}')">言葉を追加</button>
+ ${g.words.map(w=>`<div class="li"><span>${esc(w.t)}</span><button class="sm g" onclick="delW('${g.id}','${w.id}')">削除</button></div>`).join('')}
+ <br><input id="pf${g.id}" type="file" accept="image/*" multiple onchange="addP('${g.id}',this.files)">
+ <div style="display:flex;flex-wrap:wrap;gap:6px">${g.photos.map(p=>`<div class="thumb" style="background-image:url(${P[p]||''})" onclick="delP('${g.id}','${p}')"></div>`).join('')}</div>
+ <p class="mt">写真をタップで削除</p>
+ ${S.gachas.length>1?`<button class="sm g" onclick="delG('${g.id}')">このガチャを削除</button>`:''}</div>`).join('')}
+ <div class="card"><h3>ガチャを追加</h3><input id="gn" placeholder="ガチャの名前"><button onclick="addG()">追加</button></div>`}
+function addEx(){const n=$('#en').value.trim();if(!n)return;S.ex.push({id:uid(),name:n,bw:$('#eb').checked});save();render()}
+function delEx(id){if(confirm('この種目を削除しますか？過去の記録は残ります。')){S.ex=S.ex.filter(e=>e.id!=id);save();render()}}
+function addW(id){const el=$('#wt'+id),g=G(id);el.value.split('\n').map(s=>s.trim()).filter(Boolean).forEach(t=>g.words.push({id:uid(),t}));save();render()}
+function delW(id,w){const g=G(id);g.words=g.words.filter(x=>x.id!=w);save();render()}
+async function addP(id,fs){const g=G(id);for(const f of fs){const k=uid(),d=await resize(f);P[k]=d;await pPut(k,d);g.photos.push(k)}save();render();toast(fs.length+'枚追加しました')}
+function delP(id,p){if(!confirm('この写真を削除しますか？'))return;const g=G(id);g.photos=g.photos.filter(x=>x!=p);const inCol=S.col.some(c=>c.p==p);if(!inCol){pDel(p);delete P[p]}save();render()}
+function addG(){const n=$('#gn').value.trim();if(!n)return;S.gachas.push({id:uid(),name:n,cost:10,words:[],photos:[],used:[]});save();render()}
+function delG(id){if(confirm('このガチャを削除しますか？')){S.gachas=S.gachas.filter(g=>g.id!=id);if(gid==id)gid=S.gachas[0].id;save();render()}}
+function ib(){const b=$('#ib');if(!b)return;const sa=matchMedia('(display-mode: standalone)').matches;b.innerHTML=inst&&!sa?'<button class="ibtn" onclick="install()">📲 タップしてアプリをインストール</button>':''}
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();inst=e;ib()});
+window.addEventListener('appinstalled',()=>{inst=null;ib();toast('インストールしました！')});
+async function install(){if(inst){inst.prompt();await inst.userChoice;inst=null;ib()}else if(location.protocol!=='https:')alert('インストールするには、GitHub PagesのURL（https://〜）をChromeで開いてください。ダウンロードしたファイルを直接開いても入りません。');else if(matchMedia('(display-mode: standalone)').matches)toast('すでにアプリとして開いています');else alert('まだインストールできる状態になっていません。ページを再読み込みして10秒ほど待ってからもう一度押してください。それでも出ない場合は、すでにインストール済みの可能性があります（ホーム画面を確認してください）。')}
+if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+pLoad().then(render);render();
+</script></body></html>
